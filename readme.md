@@ -2,6 +2,9 @@
 
 ### _"Just Read Out"_ – A Simple, Powerful Way to Bring Voice to Your Content!
 
+![Demo for read out](https://github.com/user-attachments/assets/7ae9d27f-2362-4f12-9ed2-7337b70a9e8e)
+
+
 ## Overview
 
 The **Read Aloud Web Component** is a customizable, lightweight solution that allows you to add **text-to-speech** functionality to any webpage. With built-in support for the **Web Speech API**, it provides a seamless reading experience, highlighting words as they are read aloud.
