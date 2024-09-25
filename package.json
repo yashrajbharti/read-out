@@ -1,0 +1,16 @@
+{
+  "name": "read-aloud-component",
+  "version": "1.0.0",
+  "description": "### _\"Just Read Out\"_ – A Simple, Powerful Way to Bring Voice to Your Content!",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "web-component",
+    "text-to-speech",
+    "accessibility"
+  ],
+  "author": "Yash Raj Bharti",
+  "license": "MIT"
+}
