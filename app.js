@@ -2,7 +2,6 @@
 
 const startBtn = document.getElementById("start-btn");
 const textToRead = document.getElementById("text-to-read");
-const recognizedWordElement = document.getElementById("recognized-word");
 
 // Predefined text paragraph split into words
 const paragraphText =
@@ -41,30 +40,30 @@ if ("SpeechRecognition" in window) {
     textToRead.innerHTML = words;
   }
 
+  // Function to strip punctuation from words
+  function stripPunctuation(word) {
+    return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+  }
+
   // Process speech recognition results
   recognition.onresult = (event) => {
     let transcript = event.results[event.resultIndex][0].transcript
       .trim()
       .toLowerCase();
 
-    // Display the recognized speech for testing
-    recognizedWordElement.textContent = transcript;
+    let currentWord = stripPunctuation(
+      paragraphText[currentWordIndex].toLowerCase()
+    );
 
-    // Loop through the paragraph words and check for the next match
-    for (let i = currentWordIndex; i < paragraphText.length; i++) {
-      let currentWord = paragraphText[i].toLowerCase();
+    if (transcript.includes(currentWord)) {
+      currentWordIndex++; // Move to the next word
+      highlightCurrentWord(); // Underline the next word
 
-      if (transcript.includes(currentWord)) {
-        currentWordIndex = i; // Move to the matching word
-        highlightCurrentWord(); // Underline the matching word
-        break; // Stop searching once the next word is found
+      // Stop recognition if the entire paragraph is read
+      if (currentWordIndex >= paragraphText.length) {
+        recognition.stop();
+        alert("Reading completed!");
       }
-    }
-
-    // Stop recognition if the entire paragraph is read
-    if (currentWordIndex >= paragraphText.length) {
-      recognition.stop();
-      alert("Reading completed!");
     }
   };
 
