@@ -14,6 +14,22 @@ class ReadAloudComponent extends HTMLElement {
     this.initSpeechRecognition();
   }
 
+  static get observedAttributes() {
+    return ["lang", "highlight", "voice", "rate"];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "highlight" && newValue === "false") {
+      this.highlight = false;
+    }
+    if (name === "rate") {
+      this.speechRate = parseFloat(newValue);
+    }
+    if (name === "voice") {
+      this.selectedVoice = newValue;
+    }
+  }
+
   initSpeechRecognition() {
     const paragraphElement = this.querySelector('[slot="paragraph"]');
     const startBtn = this.querySelector('[slot="start-btn"]');
@@ -21,10 +37,15 @@ class ReadAloudComponent extends HTMLElement {
       console.error("No paragraph found!");
       return;
     }
+
     const paragraphText = paragraphElement.textContent.trim().split(" ");
     let currentWordIndex = 0;
 
     const language = this.getAttribute("lang") || "en-US";
+    const highlight = this.getAttribute("highlight") !== "false";
+    const voice = this.getAttribute("voice") || "default";
+    const rate = parseFloat(this.getAttribute("rate")) || 1;
+
     window.SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -41,20 +62,29 @@ class ReadAloudComponent extends HTMLElement {
         this.highlightCurrentWord(
           paragraphElement,
           paragraphText,
-          currentWordIndex
+          currentWordIndex,
+          highlight
         );
       });
 
-      this.highlightCurrentWord = (paragraphElement, paragraphText, index) => {
-        const words = paragraphText
-          .map((word, idx) => {
-            return idx === index
-              ? `<span class="highlighted-read-out">${word}</span>`
-              : word;
-          })
-          .join(" ");
-
-        paragraphElement.innerHTML = words;
+      this.highlightCurrentWord = (
+        paragraphElement,
+        paragraphText,
+        index,
+        highlight
+      ) => {
+        if (highlight) {
+          const words = paragraphText
+            .map((word, idx) => {
+              return idx === index
+                ? `<span class="highlighted-read-out">${word}</span>`
+                : word;
+            })
+            .join(" ");
+          paragraphElement.innerHTML = words;
+        } else {
+          paragraphElement.innerHTML = paragraphText.join(" ");
+        }
       };
 
       this.stripPunctuation = (word) => {
@@ -75,7 +105,8 @@ class ReadAloudComponent extends HTMLElement {
           this.highlightCurrentWord(
             paragraphElement,
             paragraphText,
-            currentWordIndex
+            currentWordIndex,
+            highlight
           );
 
           if (currentWordIndex >= paragraphText.length) {
