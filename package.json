@@ -1,6 +1,6 @@
 {
   "name": "read-aloud-component",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "\"Just Read Out\" - A Simple, Powerful Way to Bring Voice to Your Content!",
   "main": "app.js",
   "scripts": {

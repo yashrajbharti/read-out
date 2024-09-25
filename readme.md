@@ -120,7 +120,7 @@ With this example:
 
 You're ready to go! Simply add the component to your HTML and style it.
 
----
+#### [NPM LINK](https://www.npmjs.com/package/read-aloud-component)
 
 ## 💻 Browser Support
 
