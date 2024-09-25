@@ -11,27 +11,16 @@ class ReadAloudComponent extends HTMLElement {
     `;
 
     shadow.appendChild(container);
-
-    const style = document.createElement("style");
-    style.textContent = `
-      .highlighted {
-        text-decoration: underline;
-        color: red;
-      }
-    `;
-    shadow.appendChild(style);
     this.initSpeechRecognition();
   }
 
   initSpeechRecognition() {
     const paragraphElement = this.querySelector('[slot="paragraph"]');
     const startBtn = this.querySelector('[slot="start-btn"]');
-
     if (!paragraphElement) {
       console.error("No paragraph found!");
       return;
     }
-
     const paragraphText = paragraphElement.textContent.trim().split(" ");
     let currentWordIndex = 0;
 
@@ -64,6 +53,7 @@ class ReadAloudComponent extends HTMLElement {
               : word;
           })
           .join(" ");
+
         paragraphElement.innerHTML = words;
       };
 
@@ -75,6 +65,7 @@ class ReadAloudComponent extends HTMLElement {
         let transcript = event.results[event.resultIndex][0].transcript
           .trim()
           .toLowerCase();
+
         let currentWord = this.stripPunctuation(
           paragraphText[currentWordIndex].toLowerCase()
         );
@@ -89,7 +80,12 @@ class ReadAloudComponent extends HTMLElement {
 
           if (currentWordIndex >= paragraphText.length) {
             recognition.stop();
-            alert("Reading completed!");
+
+            this.dispatchEvent(
+              new CustomEvent("reading-complete", {
+                detail: { message: "Reading completed" },
+              })
+            );
           }
         }
       };
@@ -97,6 +93,7 @@ class ReadAloudComponent extends HTMLElement {
       recognition.onerror = (event) => {
         console.error(`Error occurred: ${event.error}`);
       };
+
       recognition.onend = () => {
         if (currentWordIndex < paragraphText.length) {
           recognition.start();
