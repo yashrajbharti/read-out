@@ -4,10 +4,11 @@
 
 ![Demo for read out](https://github.com/user-attachments/assets/7ae9d27f-2362-4f12-9ed2-7337b70a9e8e)
 
-
 ## Overview
 
 The **Read Aloud Web Component** is a customizable, lightweight solution that allows you to add **text-to-speech** functionality to any webpage. With built-in support for the **Web Speech API**, it provides a seamless reading experience, highlighting words as they are read aloud.
+
+[LAUNCH DEMO](https://yashrajbharti.github.io/read-out/)
 
 ---
 
@@ -109,6 +110,12 @@ With this example:
 
    ```html
    <script src="app.js"></script>
+   ```
+
+   OR USE `unpkg`
+
+   ```html
+   <script src="https://unpkg.com/read-aloud-component@1.0.1/app.js"></script>
    ```
 
 You're ready to go! Simply add the component to your HTML and style it.
