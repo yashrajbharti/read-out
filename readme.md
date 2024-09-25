@@ -31,7 +31,7 @@ The **Read Aloud Web Component** is a customizable, lightweight component that a
 
 ## Requirements
 
-- A browser with Web Speech API support (Chrome, Edge, etc.).
+- A browser with Web Speech API support (Chrome, Safari, Edge, etc.).
 
 ## Installation
 
