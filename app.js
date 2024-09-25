@@ -1,83 +1,113 @@
-// app.js
+class ReadAloudComponent extends HTMLElement {
+  constructor() {
+    super();
 
-const startBtn = document.getElementById("start-btn");
-const textToRead = document.getElementById("text-to-read");
+    const shadow = this.attachShadow({ mode: "open" });
+    const container = document.createElement("div");
 
-// Predefined text paragraph split into words
-const paragraphText =
-  "The quick brown fox jumps over the lazy dog. This is a sample paragraph to read out loud.".split(
-    " "
-  );
-let currentWordIndex = 0;
+    container.innerHTML = `
+      <slot name="paragraph"></slot>
+      <slot name="start-btn"></slot>
+    `;
 
-window.SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
+    shadow.appendChild(container);
 
-if ("SpeechRecognition" in window) {
-  console.log("Web Speech API is supported");
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-US"; // Set language to match the paragraph's language
-  recognition.interimResults = true;
-  recognition.continuous = true;
-
-  // Start speech recognition
-  startBtn.addEventListener("click", () => {
-    recognition.start();
-    highlightCurrentWord();
-  });
-
-  // Function to highlight the current word being read
-  function highlightCurrentWord() {
-    const words = paragraphText
-      .map((word, index) => {
-        return index === currentWordIndex
-          ? `<span class="highlighted">${word}</span>`
-          : word;
-      })
-      .join(" ");
-
-    textToRead.innerHTML = words;
-  }
-
-  // Function to strip punctuation from words
-  function stripPunctuation(word) {
-    return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-  }
-
-  // Process speech recognition results
-  recognition.onresult = (event) => {
-    let transcript = event.results[event.resultIndex][0].transcript
-      .trim()
-      .toLowerCase();
-
-    let currentWord = stripPunctuation(
-      paragraphText[currentWordIndex].toLowerCase()
-    );
-
-    if (transcript.includes(currentWord)) {
-      currentWordIndex++; // Move to the next word
-      highlightCurrentWord(); // Underline the next word
-
-      // Stop recognition if the entire paragraph is read
-      if (currentWordIndex >= paragraphText.length) {
-        recognition.stop();
-        alert("Reading completed!");
+    const style = document.createElement("style");
+    style.textContent = `
+      .highlighted {
+        text-decoration: underline;
+        color: red;
       }
-    }
-  };
+    `;
+    shadow.appendChild(style);
+    this.initSpeechRecognition();
+  }
 
-  // Handle speech recognition errors
-  recognition.onerror = (event) => {
-    console.error(`Error occurred: ${event.error}`);
-  };
+  initSpeechRecognition() {
+    const paragraphElement = this.querySelector('[slot="paragraph"]');
+    const startBtn = this.querySelector('[slot="start-btn"]');
 
-  recognition.onend = () => {
-    if (currentWordIndex < paragraphText.length) {
-      recognition.start(); // Restart recognition if reading isn't complete
+    if (!paragraphElement) {
+      console.error("No paragraph found!");
+      return;
     }
-  };
-} else {
-  console.log("Web Speech API is not supported in this browser.");
-  textToRead.textContent = "Web Speech API is not supported in this browser.";
+
+    const paragraphText = paragraphElement.textContent.trim().split(" ");
+    let currentWordIndex = 0;
+
+    const language = this.getAttribute("lang") || "en-US";
+    window.SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if ("SpeechRecognition" in window) {
+      console.log("Web Speech API is supported");
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = language;
+      recognition.interimResults = true;
+      recognition.continuous = true;
+
+      startBtn.addEventListener("click", () => {
+        recognition.start();
+        this.highlightCurrentWord(
+          paragraphElement,
+          paragraphText,
+          currentWordIndex
+        );
+      });
+
+      this.highlightCurrentWord = (paragraphElement, paragraphText, index) => {
+        const words = paragraphText
+          .map((word, idx) => {
+            return idx === index
+              ? `<span class="highlighted-read-out">${word}</span>`
+              : word;
+          })
+          .join(" ");
+        paragraphElement.innerHTML = words;
+      };
+
+      this.stripPunctuation = (word) => {
+        return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = event.results[event.resultIndex][0].transcript
+          .trim()
+          .toLowerCase();
+        let currentWord = this.stripPunctuation(
+          paragraphText[currentWordIndex].toLowerCase()
+        );
+
+        if (transcript.includes(currentWord)) {
+          currentWordIndex++;
+          this.highlightCurrentWord(
+            paragraphElement,
+            paragraphText,
+            currentWordIndex
+          );
+
+          if (currentWordIndex >= paragraphText.length) {
+            recognition.stop();
+            alert("Reading completed!");
+          }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error(`Error occurred: ${event.error}`);
+      };
+      recognition.onend = () => {
+        if (currentWordIndex < paragraphText.length) {
+          recognition.start();
+        }
+      };
+    } else {
+      console.log("Web Speech API is not supported in this browser.");
+      paragraphElement.textContent =
+        "Web Speech API is not supported in this browser.";
+    }
+  }
 }
+
+customElements.define("read-aloud-component", ReadAloudComponent);

@@ -4,16 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Read Aloud App</title>
+    <title>Read Aloud Component</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h1>Read Aloud</h1>
-    <p id="text-to-read">
-        The quick brown fox jumps over the lazy dog. This is a sample paragraph to read out loud.
-    </p>
-    <button id="start-btn">Start Reading</button>
+    <h1>Read Aloud Web Component</h1>
+
+    <read-aloud-component lang="en-US">
+        <p slot="paragraph">
+            The quick brown fox jumps over the lazy dog. This is a sample paragraph to read out loud.
+        </p>
+        <button slot="start-btn">Start Reading</button>
+    </read-aloud-component>
 
     <script src="app.js"></script>
 </body>
