@@ -1,10 +1,14 @@
 {
   "name": "read-aloud-component",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "\"Just Read Out\" - A Simple, Powerful Way to Bring Voice to Your Content!",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yashrajbharti/read-out.git"
   },
   "keywords": [
     "web-component",
@@ -12,5 +16,9 @@
     "accessibility"
   ],
   "author": "Yash Raj Bharti",
-  "license": "MIT"
+  "license": "MIT LICENSE",
+  "bugs": {
+    "url": "https://github.com/yashrajbharti/read-out/issues"
+  },
+  "homepage": "https://yashrajbharti.github.io/read-out/"
 }

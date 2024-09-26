@@ -115,12 +115,31 @@ With this example:
    OR USE `unpkg`
 
    ```html
-   <script src="https://unpkg.com/read-aloud-component@1.0.1/app.js"></script>
+   <script src="https://unpkg.com/read-aloud-component@1.0.3/app.js"></script>
    ```
 
 You're ready to go! Simply add the component to your HTML and style it.
 
 #### [NPM LINK](https://www.npmjs.com/package/read-aloud-component)
+
+## Use Cases
+
+- 🌍 **Language Learning**  
+  Helps learners follow along as each word is highlighted during speech, improving comprehension and pronunciation.
+
+- 👩‍🏫 **Educational Tool**  
+  Teachers can use it on smartboards to guide students through reading, making lessons more interactive.
+
+- 👶 **Reading Practice for Kids**  
+  Parents can add custom sentences or stories to aid children in reading development with real-time word tracking.
+
+- 🗣️ **Speech Development**  
+  Learners can improve fluency by listening to text read aloud while following the highlighted words.
+
+- ♿ **Accessibility**  
+  Assists individuals with reading challenges by highlighting spoken words, enhancing focus and reducing cognitive load.
+
+#### [EXAMPLE USING YOUR OWN TEXT](https://yashrajbharti.github.io/read-out/demos/example.html)
 
 ## 💻 Browser Support
 

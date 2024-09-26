@@ -11,7 +11,10 @@ class ReadAloudComponent extends HTMLElement {
     `;
 
     shadow.appendChild(container);
-    this.initSpeechRecognition();
+
+    this.highlight = true;
+    this.speechRate = 1;
+    this.selectedVoice = "default";
   }
 
   static get observedAttributes() {
@@ -30,9 +33,36 @@ class ReadAloudComponent extends HTMLElement {
     }
   }
 
+  connectedCallback() {
+    const paragraphSlot = this.shadowRoot.querySelector(
+      'slot[name="paragraph"]'
+    );
+    paragraphSlot.addEventListener("slotchange", () => {
+      this.initSpeechRecognition();
+    });
+
+    const startBtn = this.shadowRoot.querySelector('slot[name="start-btn"]');
+    startBtn.addEventListener("slotchange", () => {
+      this.attachStartButton();
+    });
+  }
+
+  attachStartButton() {
+    const startBtn = this.querySelector('[slot="start-btn"]');
+    if (!startBtn) {
+      console.error("No start button found!");
+      return;
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (this.recognition) {
+        this.recognition.start();
+      }
+    });
+  }
+
   initSpeechRecognition() {
     const paragraphElement = this.querySelector('[slot="paragraph"]');
-    const startBtn = this.querySelector('[slot="start-btn"]');
     if (!paragraphElement) {
       console.error("No paragraph found!");
       return;
@@ -42,9 +72,9 @@ class ReadAloudComponent extends HTMLElement {
     let currentWordIndex = 0;
 
     const language = this.getAttribute("lang") || "en-US";
-    const highlight = this.getAttribute("highlight") !== "false";
-    const voice = this.getAttribute("voice") || "default";
-    const rate = parseFloat(this.getAttribute("rate")) || 1;
+    const highlight = this.highlight;
+    const voice = this.selectedVoice;
+    const rate = this.speechRate;
 
     window.SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -52,20 +82,10 @@ class ReadAloudComponent extends HTMLElement {
     if ("SpeechRecognition" in window) {
       console.log("Web Speech API is supported");
 
-      const recognition = new SpeechRecognition();
-      recognition.lang = language;
-      recognition.interimResults = true;
-      recognition.continuous = true;
-
-      startBtn.addEventListener("click", () => {
-        recognition.start();
-        this.highlightCurrentWord(
-          paragraphElement,
-          paragraphText,
-          currentWordIndex,
-          highlight
-        );
-      });
+      this.recognition = new SpeechRecognition();
+      this.recognition.lang = language;
+      this.recognition.interimResults = true;
+      this.recognition.continuous = true;
 
       this.highlightCurrentWord = (
         paragraphElement,
@@ -87,11 +107,18 @@ class ReadAloudComponent extends HTMLElement {
         }
       };
 
+      this.highlightCurrentWord(
+        paragraphElement,
+        paragraphText,
+        currentWordIndex,
+        highlight
+      );
+
       this.stripPunctuation = (word) => {
         return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
       };
 
-      recognition.onresult = (event) => {
+      this.recognition.onresult = (event) => {
         let transcript = event.results[event.resultIndex][0].transcript
           .trim()
           .toLowerCase();
@@ -110,7 +137,7 @@ class ReadAloudComponent extends HTMLElement {
           );
 
           if (currentWordIndex >= paragraphText.length) {
-            recognition.stop();
+            this.recognition.stop();
 
             this.dispatchEvent(
               new CustomEvent("reading-complete", {
@@ -121,13 +148,13 @@ class ReadAloudComponent extends HTMLElement {
         }
       };
 
-      recognition.onerror = (event) => {
+      this.recognition.onerror = (event) => {
         console.error(`Error occurred: ${event.error}`);
       };
 
-      recognition.onend = () => {
+      this.recognition.onend = () => {
         if (currentWordIndex < paragraphText.length) {
-          recognition.start();
+          this.recognition.start();
         }
       };
     } else {
